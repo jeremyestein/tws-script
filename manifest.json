@@ -1,0 +1,24 @@
+{
+	"manifest_version":2,
+	"version":"1.0",
+	"name":"Wine Society link extractor",
+	"description": "Extracts tabular data from shopping basket, wishlist, etc",
+	"icons": {
+		"64": "icons/wine64.png",
+		"32": "icons/wine32.png"
+	},
+	"content_scripts":[
+		{
+			"matches":["https://*.thewinesociety.com/*"],
+			"js":["main.js"]
+		}
+	],
+	"browser_action": {
+		"default_icon": "icons/wine32.png",
+		"default_title": "Beastify",
+		"default_popup": "menu/actions.html"
+	}
+
+}
+
+
