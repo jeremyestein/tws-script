@@ -16,13 +16,7 @@
 			"matches":["https://*.thewinesociety.com/*"],
 			"js":["main.js"]
 		}
-	],
-	"browser_action": {
-		"default_icon": "icons/wine32.png",
-		"default_title": "Copy wine links",
-		"default_popup": "popup/copy_wine.html"
-	}
-
+	]
 }
 
 
