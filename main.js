@@ -4,9 +4,9 @@ document.body.style.border = "5px solid #ff0080";
 console.log('main.js says hello');
 
 
-browser.runtime.onMessage.addListener(request => {
-	document.body.style.border = "15px solid #ff0080";
-	console.log("Message from the background script:");
-	console.log(request.greeting);
-	return Promise.resolve({response: "Hi from content script"});
-});
+//browser.runtime.onMessage.addListener(request => {
+	//document.body.style.border = "15px solid #ff0080";
+	//console.log("Message from the background script:");
+	//console.log(request.greeting);
+	//return Promise.resolve({response: "Hi from content script"});
+//});
