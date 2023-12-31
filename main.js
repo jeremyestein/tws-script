@@ -7,21 +7,25 @@ function dataItemFromBI(bi) {
     var stock_status_span = bi.querySelector('.badge-label');
     var item_code = bi.querySelector('.basket-item__code');
 
+
     try {
         // these might not exist if item is out of stock
         var quantity_value_sel = bi.querySelector('.basket-item__quantity-select select');
         var quantity_value = quantity_value_sel.value;
         var quantity_unit_sel = bi.querySelector('.basket-item__type select');
         var quantity_unit = quantity_unit_sel.selectedOptions[0].innerText; // only one can be selected
+        var price = bi.querySelector('.basket-item__price').innerText;
     } catch (err) {
-        var quantity_value = '?';
-        var quantity_unit = '?';
+        var quantity_value = '';
+        var quantity_unit = '';
+        var price = '';
     }
     var item = {
         wine: wine_desc,
         code: item_code.innerText,
         url: abs_url,
         stock: stock_status_span.innerText,
+        price: price,
         qty_val: quantity_value,
         qty_unit: quantity_unit
     };
@@ -32,6 +36,21 @@ function getAllBasketItems() {
     return document.querySelectorAll('li.basket-item');
 }
 
+function determinePage() {
+    if(/www.thewinesociety.com\/wishlist/.test(window.location.href)) {
+        return "wishlist";
+    } else if(/www.thewinesociety.com\/basket/.test(window.location.href)) {
+        return "basket";
+    } else if(/www.thewinesociety.com\/my-account\/order-history\/order-details/.test(window.location.href)) {
+        return "order";
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Generate and update the string at the top saying how many bottles/cases are in the basket
+ */
 function updateSummaryString() {
     var summaryDiv = document.querySelector('.summary-text-jes');
     if (summaryDiv === null) {
@@ -55,7 +74,7 @@ function updateSummaryString() {
 }
 
 function formatItemAsStr(item) {
-    return `| ${item.wine} | ${item.code} | ${item.url} | ${item.stock} | ${item.qty_val} | ${item.qty_unit} |`;
+    return `| ${item.wine} | ${item.code} | ${item.url} | ${item.stock} | ${item.price} | ${item.qty_val} | ${item.qty_unit} |`;
 }
 
 function makeCopyButtons() {
@@ -80,8 +99,11 @@ function makeCopyButtons() {
         var all_butt = document.createElement('BUTTON');
         all_butt.className = copy_all_button_class;
         all_butt.onclick = () => {
-            let copyStr = '| wine | code | url | stock | qty_val | qty_unit |\n'
-                        + '| --- | --- | --- | --- | --- | --- |\n';
+            let page = determinePage();
+            let timestamp = new Date().toLocaleString();
+            let copyStr = `Copied from ${page} at ${timestamp}:\n\n` // double LF or table doesn't render in obsidian
+                        + '| wine | code | url | stock | price | qty_val | qty_unit |\n'
+                        + '| --- | --- | --- | --- | --- | --- | --- |\n';
             for (let bi of getAllBasketItems()) {
                 var item = dataItemFromBI(bi);
                 copyStr += formatItemAsStr(item) + '\n';
@@ -134,5 +156,7 @@ function makeCopyButtons() {
 
 var fruitless_run_count = 0;
 var intervalID = setInterval(makeCopyButtons, 1000);
-setInterval(updateSummaryString, 1000);
+if (determinePage() == 'basket') {
+    setInterval(updateSummaryString, 1000);
+}
 

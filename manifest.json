@@ -1,8 +1,8 @@
 {
 	"manifest_version":2,
 	"version":"1.0",
-	"name":"Wine Society link extractor",
-	"description": "Extracts tabular data from shopping basket, wishlist, etc",
+	"name":"Wine Society basket summariser",
+	"description": "Displays summary and extracts tabular data from shopping basket, wishlist, etc",
 
 	"permissions": [
 		"activeTab"
