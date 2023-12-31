@@ -15,3 +15,5 @@ Better styling.
 
 Make initialisation less hacky.
 
+Should be a userscript not an extension?
+

@@ -7,6 +7,8 @@ function dataItemFromBI(bi) {
     var stock_status_span = bi.querySelector('.badge-label');
     var item_code = bi.querySelector('.basket-item__code');
 
+    let match = item_code.innerText.match('Code: (.*)');
+    let stripped_code = match[1];
 
     try {
         // these might not exist if item is out of stock
@@ -22,7 +24,7 @@ function dataItemFromBI(bi) {
     }
     var item = {
         wine: wine_desc,
-        code: item_code.innerText,
+        code: stripped_code,
         url: abs_url,
         stock: stock_status_span.innerText,
         price: price,
