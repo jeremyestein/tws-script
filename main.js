@@ -128,16 +128,10 @@ function makeCopyButtons() {
         var item = dataItemFromBI(bi);
         var butt = document.createElement('BUTTON');
         butt.className = copy_button_class;
-        // I'm not sure why this mess is needed, but I was previously getting
-        // every button copying the *last* value copyString had in the loop.
-        function onclickgen(copyStr) {
-            function onclickinner() {
-                navigator.clipboard.writeText(copyStr);
-            }
-            return onclickinner;
-        }
-        let copyString = formatItemAsStr(item);
-        butt.onclick = onclickgen(copyString);
+        // BUG!
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures#creating_closures_in_loops_a_common_mistake
+        var copyString = formatItemAsStr(item);
+        butt.onclick = () => { navigator.clipboard.writeText(copyString); };
         butt.innerHTML = 'Copy';
         bi.prepend(butt);
     }
