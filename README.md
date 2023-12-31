@@ -17,3 +17,4 @@ Make initialisation less hacky.
 
 Should be a userscript not an extension?
 
+Only tested on Firefox.
