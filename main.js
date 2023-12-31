@@ -5,17 +5,21 @@ function dataItemFromBI(bi) {
     var abs_url = link_in_title.href;
     var wine_desc = link_in_title.text;
     var stock_status_span = bi.querySelector('.badge-label');
+    var item_code = bi.querySelector('.basket-item__code');
+
     try {
+        // these might not exist if item is out of stock
         var quantity_value_sel = bi.querySelector('.basket-item__quantity-select select');
         var quantity_value = quantity_value_sel.value;
         var quantity_unit_sel = bi.querySelector('.basket-item__type select');
-        var quantity_unit = quantity_unit_sel.value;
+        var quantity_unit = quantity_unit_sel.selectedOptions[0].innerText; // only one can be selected
     } catch (err) {
         var quantity_value = '?';
         var quantity_unit = '?';
     }
     var item = {
         wine: wine_desc,
+        code: item_code.innerText,
         url: abs_url,
         stock: stock_status_span.innerText,
         qty_val: quantity_value,
@@ -24,8 +28,34 @@ function dataItemFromBI(bi) {
     return item;
 }
 
+function getAllBasketItems() {
+    return document.querySelectorAll('li.basket-item');
+}
+
+function updateSummaryString() {
+    var summaryDiv = document.querySelector('.summary-text-jes');
+    if (summaryDiv === null) {
+        return;
+    }
+    var type_summary = {};
+    for (let bi of getAllBasketItems()) {
+        var item = dataItemFromBI(bi);
+        if (type_summary[item.qty_unit] === undefined) {
+            type_summary[item.qty_unit] = 0;
+        }
+        type_summary[item.qty_unit] += parseInt(item.qty_val);
+    }
+    let ul = document.createElement('UL');
+    for (const [key, value] of Object.entries(type_summary)) {
+        let li = document.createElement('LI');
+        li.innerText = `${value} x ${key}`;
+        ul.appendChild(li);
+    }
+    summaryDiv.replaceChildren(ul);
+}
+
 function formatItemAsStr(item) {
-    return `| ${item.wine} | ${item.url} | ${item.stock} | ${item.qty_val} | ${item.qty_unit} |`;
+    return `| ${item.wine} | ${item.code} | ${item.url} | ${item.stock} | ${item.qty_val} | ${item.qty_unit} |`;
 }
 
 function makeCopyButtons() {
@@ -44,13 +74,15 @@ function makeCopyButtons() {
     var existing_all_butt = basket_top.parentElement.querySelectorAll('.' +  copy_all_button_class);
     if (existing_all_butt.length == 0) {
         num_created++;
+        var summaryDiv = document.createElement('DIV');
+        summaryDiv.className = 'summary-text-jes';
+        basket_top.prepend(summaryDiv);
         var all_butt = document.createElement('BUTTON');
         all_butt.className = copy_all_button_class;
         all_butt.onclick = () => {
-            let copyStr = '| wine | url | stock | qty_val | qty_unit |\n'
-                        + '| --- | --- | --- | --- | --- |\n';
-            var basket_items = document.querySelectorAll('li.basket-item');
-            for (let bi of basket_items) {
+            let copyStr = '| wine | code | url | stock | qty_val | qty_unit |\n'
+                        + '| --- | --- | --- | --- | --- | --- |\n';
+            for (let bi of getAllBasketItems()) {
                 var item = dataItemFromBI(bi);
                 copyStr += formatItemAsStr(item) + '\n';
             }
@@ -60,10 +92,7 @@ function makeCopyButtons() {
         basket_top.prepend(all_butt);
     }
 
-    var basket_items = document.querySelectorAll('li.basket-item');
-    console.log('basket_items: ')
-    console.log(basket_items)
-    for (let bi of basket_items) {
+    for (let bi of getAllBasketItems()) {
         var existing_butts = bi.querySelectorAll('.' +  copy_button_class);
         if (existing_butts.length > 0) {
             console.log('button already exists' + bi);
@@ -105,4 +134,5 @@ function makeCopyButtons() {
 
 var fruitless_run_count = 0;
 var intervalID = setInterval(makeCopyButtons, 1000);
+setInterval(updateSummaryString, 1000);
 
